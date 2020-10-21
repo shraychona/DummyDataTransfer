@@ -38,13 +38,9 @@ class SharedViewModel(application: Application) : AndroidViewModel(application) 
         itemList.forEach { it.isSelected = false }
 
         if (isFromLeftToRight) {
-//            firstList.minus(itemList)
-//            secondList.plus(itemList)
             firstList.removeAll { it in itemList }
             secondList.addAll(itemList)
         } else {
-//            firstList.plus(itemList)
-//            secondList.minus(itemList)
             firstList.addAll(itemList)
             secondList.removeAll { it in itemList }
         }
