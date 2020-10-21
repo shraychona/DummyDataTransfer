@@ -40,6 +40,8 @@ class MainAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun getSelectedList(): List<PojoItem> = itemList.filter { it.isSelected }
+
     inner class HomeFilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         init {
             itemView.setOnClickListener {
@@ -57,9 +59,5 @@ class MainAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     View.VISIBLE else ivChecked.visibility = View.GONE
             }
         }
-    }
-
-    interface MainAdapterCallbacks {
-        fun onFilterChange(filterList: List<PojoItem>)
     }
 }

@@ -1,9 +1,11 @@
 package com.example.machinetest.views.fragments
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.machinetest.R
-import com.example.machinetest.repository.models.PojoItem
+import com.example.machinetest.viewmodels.SharedViewModel
 import com.example.machinetest.views.adapters.MainAdapter
 
 /**
@@ -14,19 +16,30 @@ class MainFragment : BaseRecyclerViewFragment() {
 
     companion object {
         const val TAG = "MainFragment"
-        private const val BUNDLE_EXTRAS_FRAGMENT_POSITION = "fragmentPosition"
+        private const val BUNDLE_EXTRAS_IS_FIRST_FRAGMENT = "isFirstFragment"
 
-        fun newInstance(fragmentPosition: Int): MainFragment {
+        fun newInstance(isFirstFragment: Boolean): MainFragment {
             return MainFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(BUNDLE_EXTRAS_FRAGMENT_POSITION, fragmentPosition)
+                    putBoolean(BUNDLE_EXTRAS_IS_FIRST_FRAGMENT, isFirstFragment)
                 }
             }
         }
     }
 
-    private val fragmentPosition by lazy { arguments!!.getInt(BUNDLE_EXTRAS_FRAGMENT_POSITION, 1) }
+    private val isFirstFragment by lazy {
+        arguments!!.getBoolean(
+            BUNDLE_EXTRAS_IS_FIRST_FRAGMENT,
+            true
+        )
+    }
+
     private val adapter by lazy { MainAdapter() }
+
+    private val mSharedViewModel by lazy {
+        //Getting ViewModel
+        ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
+    }
 
     override val layoutId: Int
         get() = R.layout.fragment_main
@@ -41,15 +54,44 @@ class MainFragment : BaseRecyclerViewFragment() {
         get() = true
 
     override fun init() {
-        val itemList = mutableListOf<PojoItem>()
-        itemList.add(PojoItem(1))
-        itemList.add(PojoItem(2))
-        itemList.add(PojoItem(3))
-        itemList.add(PojoItem(4))
-        itemList.add(PojoItem(5))
-        itemList.add(PojoItem(6))
-        itemList.add(PojoItem(7))
-        adapter.updateItemList(itemList)
+        if (isFirstFragment) {
+            mSharedViewModel.setupItemList()
+        }
+
+        observeProperties()
+    }
+
+    //Helper method to observe properties via ViewModel
+    private fun observeProperties() {
+        if (isFirstFragment)
+            mSharedViewModel.getFistListLiveData().observe(viewLifecycleOwner, {
+                it?.let {
+                    adapter.updateItemList(it)
+                    if (it.isEmpty())
+                        showNoDataText(resId = R.string.text_no_data_in_list)
+                    else hideNoDataText()
+                }
+            })
+        else mSharedViewModel.getSecondListLiveData().observe(viewLifecycleOwner, {
+            it?.let {
+                adapter.updateItemList(it)
+                if (it.isEmpty())
+                    showNoDataText(resId = R.string.text_no_data_in_list)
+                else hideNoDataText()
+            }
+        })
+    }
+
+    fun moveItems() {
+        val selectedItems = adapter.getSelectedList()
+        if (selectedItems.isEmpty())
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.text_no_item_selected),
+                Toast.LENGTH_SHORT
+            ).show()
+        else
+            mSharedViewModel.transferItems(isFirstFragment, selectedItems)
     }
 
 }

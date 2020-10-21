@@ -27,7 +27,7 @@ ext {
             architectureComponentsVersion: "2.2.0",
             appcompat                    : "1.1.0",
             legacySupport                : "1.0.0",
-            recyclerview                 : "1.0.0",
+            recyclerview                 : "1.1.0",
             constraintLayout             : "2.0.2"
     ]
 }

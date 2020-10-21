@@ -5,6 +5,7 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import com.example.machinetest.R
 import com.example.machinetest.views.fragments.MainFragment
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 /**
@@ -13,12 +14,23 @@ import com.example.machinetest.views.fragments.MainFragment
  */
 class MainActivity : AppCompatActivity() {
 
+    // variables
+    private val firstFragment = MainFragment.newInstance(true)
+    private val secondFragment = MainFragment.newInstance(false)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        doFragmentTransaction(R.id.flFirstFragment, MainFragment.newInstance(1), MainFragment.TAG)
-        doFragmentTransaction(R.id.flSecondFragment, MainFragment.newInstance(2), MainFragment.TAG)
+        doFragmentTransaction(R.id.flFirstFragment, firstFragment, MainFragment.TAG)
+        doFragmentTransaction(R.id.flSecondFragment, secondFragment, MainFragment.TAG)
+
+        setupListeners()
+    }
+
+    private fun setupListeners() {
+        btnMoveRight.setOnClickListener { firstFragment.moveItems() }
+        btnMoveLeft.setOnClickListener { secondFragment.moveItems() }
     }
 
     private fun doFragmentTransaction(

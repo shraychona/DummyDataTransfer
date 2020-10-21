@@ -42,4 +42,6 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:${libraries.recyclerview}") {
         exclude module: 'support-v4'
     }
+    implementation "androidx.lifecycle:lifecycle-extensions:${libraries.architectureComponentsVersion}"
+    implementation "androidx.lifecycle:lifecycle-common-java8:${libraries.architectureComponentsVersion}"
 }
